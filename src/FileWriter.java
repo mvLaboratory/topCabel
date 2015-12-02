@@ -29,7 +29,16 @@ public class FileWriter {
         }
     }
 
-    public static void writeCategory() {
+    public static void writeCategory(String cat) {
+        file.println("<div class=\"tovar\">");
+        file.println("<div class=\"cat\">" + cat + "</div> ");
+    }
 
+    public static void writeName(String name) {
+        file.println("<div class=\"name\">" + name + "</div> ");
+    }
+
+    public static void writeArt(String art) {
+        file.println("<div class=\"articul\">" + art + "</div> ");
     }
 }
