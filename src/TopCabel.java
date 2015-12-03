@@ -9,11 +9,13 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 public class TopCabel {
-        public static void main(String[] args) throws Exception {
+    public static FileWriter fileWriter = FileWriter.getInstance();
+    public static String fullDesk = "";
+
+    public static void main(String[] args) throws Exception {
         String url = "http://topkabel.ru/";
         Connection connection = Jsoup.connect(url);
         Document document = connection.get();
-        //System.out.println(document);
 
         Elements elements = document.select(".cat-list");
         for (Element element : elements) {
@@ -25,16 +27,23 @@ public class TopCabel {
                 if (linkHref.startsWith("https")) {
                     // System.out.println(linkHref);
                     connection = Jsoup.connect(linkHref);
-                    document = connection.get();
+                    try {
+                        document = connection.get();
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     readGoods(document, linkText);
                 }
             }
-
         }
+        fileWriter.dispose();
     }
 
     public static void readGoods(Document document, String category) {
         Elements elements = document.select(".cart-table");
+        //int fullIndex = 0;
+
         for (Element element : elements) {
             int index = 0;
             Elements table = element.select("td");
@@ -44,13 +53,17 @@ public class TopCabel {
                 else if (row.childNodeSize() > 0)
                     parseLink(row, index, category);
                 index = (++index) % 7;
+
+//                fullIndex++;
+//                if (fullIndex > 5) break;
             }
         }
+
     }
 
     public static void parseLink(Element link, int index, String cat) {
         if (index == 0) {
-            System.out.println(cat);
+            fileWriter.writeCategory(cat);
             readLink(link); }
         else if (index == 1) {
             readArt(link);
@@ -64,27 +77,31 @@ public class TopCabel {
         else if (index == 5)
             readDeskription(link);
         else if (index == 6)
-            return;
+            fileWriter.writeEnd();
         else
             System.out.println(index + ":" + " " + link);
     }
 
     public static void readLink(Element link) {
-        String txt = link.text();
+        String name = link.text();
+        fileWriter.writeName(name);
         String href = link.select("a").get(0).attr("href");
         readFullDeskription(href);
 
-        System.out.println(txt + ": " + href);
+        //System.out.println(txt + ": " + href);
     }
 
     public static void readArt(Element link) {
         String art = link.text();
-        System.out.println("art: " + art);
+        fileWriter.writeArt(art);
+        //System.out.println("art: " + art);
     }
 
     public static void readDeskription(Element link) {
         String deskription = link.text();
-        System.out.println("desk:" + deskription);
+        fileWriter.writeDeskr(deskription);
+        fileWriter.writeFullDeskr(fullDesk);
+        //System.out.println("desk:" + deskription);
     }
 
     public static void readFullDeskription(String link) {
@@ -92,8 +109,14 @@ public class TopCabel {
         try {
             Document document = connection.get();
             Elements desk = document.select(".product-tabs-container");
-            String fullDesk = desk.select("p").get(0).text();
-            System.out.println(fullDesk);
+
+            //String fullDesk = "";
+            Elements deskElements = desk.select("p");
+            if (deskElements.size() > 0)
+                fullDesk = deskElements.get(0).text();
+
+            //System.out.println(fullDesk);
+            //fileWriter.writeFullDeskr(fullDesk);
         }
         catch (IOException e) {}
     }

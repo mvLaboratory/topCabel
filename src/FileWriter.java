@@ -1,6 +1,7 @@
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+import com.sun.media.jfxmediaimpl.MediaDisposer;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class FileWriter {
     private static FileWriter instance;
@@ -20,13 +21,17 @@ public class FileWriter {
 
     public static void createFile() {
         try {
-            file = new PrintWriter(new FileOutputStream("D:/MV_lab/topKabel.html"));
-            file.println("<div class=\"tovar\">");
-            file.close();
+            //file = new PrintWriter(new FileOutputStream("D:/MV-lab/topKabel.html"));
+            //file = new OutputStreamWriter(new FileOutputStream ("D:/MV-lab/topKabel.html"));
+            file = new PrintWriter(new OutputStreamWriter(new FileOutputStream ("D:/MV-lab/topKabel.html"), StandardCharsets.UTF_16));
         }
         catch (FileNotFoundException e) {
             System.out.println("file not find");
         }
+    }
+
+    public static void dispose() {
+        file.close();
     }
 
     public static void writeCategory(String cat) {
@@ -40,5 +45,17 @@ public class FileWriter {
 
     public static void writeArt(String art) {
         file.println("<div class=\"articul\">" + art + "</div> ");
+    }
+
+    public static void writeDeskr(String Deskr) {
+        file.println("<div class=\"minidesc\">" + Deskr + "</div> ");
+    }
+
+    public static void writeFullDeskr(String Deskr) {
+        file.println("<div class=\"minidesc\">" + Deskr + "</div> ");
+    }
+
+    public static void writeEnd() {
+        file.println("</div> ");
     }
 }
